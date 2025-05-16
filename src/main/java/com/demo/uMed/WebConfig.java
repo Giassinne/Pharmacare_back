@@ -8,7 +8,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Permet à toutes les routes de gérer CORS
-                .allowedOrigins("http://localhost:3000") // Autorise les demandes depuis le frontend (localhost:3000)
+                .allowedOrigins("https://pharama-care.vercel.app/") // Autorise les demandes depuis le frontend (localhost:3000)
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // Autorise les méthodes HTTP
                 .allowedHeaders("*"); // Autorise tous les en-têtes
     }

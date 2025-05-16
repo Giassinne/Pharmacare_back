@@ -22,7 +22,7 @@ public class Medicine {
 
     @ManyToOne
     @JsonBackReference  // Ajoutez cette annotation pour éviter la récursion
-    private Pharmacie pharmacie;
+    private Laboratory laboratory;
 
     private String imageUrl;
 
@@ -51,8 +51,8 @@ public class Medicine {
         return prix;
     }
 
-    public Pharmacie getPharmacie() {
-        return pharmacie;
+    public Laboratory getLaboratory() {
+        return laboratory;
     }
 
     public String getImageUrl() {
@@ -67,8 +67,8 @@ public class Medicine {
         this.prix = prix;
     }
 
-    public void setPharmacie(Pharmacie pharmacie) {
-        this.pharmacie = pharmacie;
+    public void setLaboratory(Laboratory laboratory) {
+        this.laboratory = laboratory;
     }
 
     public void setImageUrl(String imageUrl) {
