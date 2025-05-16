@@ -1,7 +1,7 @@
 package com.demo.uMed.controller;
 
-import com.demo.uMed.modules.Laboratory;
-import com.demo.uMed.repo.LaboratoryRepo;
+import com.demo.uMed.modules.Pharmacie;
+import com.demo.uMed.repo.PharmacieRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,40 +9,43 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/laboratories")
-public class LaboratoryController {
+@RequestMapping("/pharmacies")
+public class PharmacieController {
 
-    private final LaboratoryRepo laboratoryRepo;
+    private final PharmacieRepo pharmacieRepo;
 
     @Autowired
-    public LaboratoryController(LaboratoryRepo laboratoryRepo) {
-        this.laboratoryRepo = laboratoryRepo;
+    public PharmacieController(PharmacieRepo pharmacieRepo) {
+        this.pharmacieRepo = pharmacieRepo;
     }
 
     @GetMapping
-    public List<Laboratory> getAllLaboratories() {
-        return laboratoryRepo.findAll();
+    public List<Pharmacie> getAllPharmacies() {
+        return pharmacieRepo.findAll();
     }
 
     @PostMapping
-    public Laboratory createLaboratory(@RequestBody Laboratory laboratory) {
-        return laboratoryRepo.save(laboratory);
+    public Pharmacie createPharmacie(@RequestBody Pharmacie pharmacie) {
+        return pharmacieRepo.save(pharmacie);
     }
 
     @GetMapping("/{id}")
-    public Laboratory getLaboratoryById(@PathVariable Long id) {
-        Optional<Laboratory> laboratory = laboratoryRepo.findById(id);
-        return laboratory.orElse(null);
+    public Pharmacie getPharmacieById(@PathVariable Long id) {
+        Optional<Pharmacie> pharmacie = pharmacieRepo.findById(id);
+        return pharmacie.orElse(null);
     }
 
     @PutMapping("/{id}")
-    public Laboratory updateLaboratory(@PathVariable Long id, @RequestBody Laboratory laboratory) {
-        laboratory.setId(id);
-        return laboratoryRepo.save(laboratory);
+    public Pharmacie updatePharmacie(@PathVariable Long id, @RequestBody Pharmacie pharmacie) {
+        if (pharmacieRepo.existsById(id)) {
+            pharmacie.setId(id);
+            return pharmacieRepo.save(pharmacie);
+        }
+        return null;
     }
 
     @DeleteMapping("/{id}")
-    public void deleteLaboratory(@PathVariable Long id) {
-        laboratoryRepo.deleteById(id);
+    public void deletePharmacie(@PathVariable Long id) {
+        pharmacieRepo.deleteById(id);
     }
 }
