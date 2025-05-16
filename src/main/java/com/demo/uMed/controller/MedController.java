@@ -8,70 +8,52 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-
 @RestController
-@RequestMapping("/meds")  // URL de base pour ce contrôleur
+@RequestMapping("/meds")
 public class MedController {
 
     @Autowired
     private MedRepo medRepo;
 
-    // Méthode pour obtenir tous les médicaments
-    @GetMapping("/getAllMeds")
+    @GetMapping
     public ResponseEntity<List<Medicine>> getAllMeds() {
         List<Medicine> medicineList = medRepo.findAll();
-
         if (medicineList.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
-        } else {
-            return new ResponseEntity<>(medicineList, HttpStatus.OK); // 200 OK
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        return new ResponseEntity<>(medicineList, HttpStatus.OK);
     }
 
-    // Méthode pour obtenir un médicament par son ID
-    @GetMapping("/getMedById/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Medicine> getMedById(@PathVariable Long id) {
-        Optional<Medicine> medData = medRepo.findById(id);
-
-        if (medData.isPresent()) {
-            return new ResponseEntity<>(medData.get(), HttpStatus.OK); // 200 OK
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+        return medRepo.findById(id)
+                .map(med -> new ResponseEntity<>(med, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // Méthode pour ajouter un médicament
-    @PostMapping("/addMed")
+    @PostMapping
     public ResponseEntity<Medicine> addMed(@RequestBody Medicine medicine) {
         Medicine savedMedicine = medRepo.save(medicine);
-        return new ResponseEntity<>(savedMedicine, HttpStatus.CREATED); // 201 Created
+        return new ResponseEntity<>(savedMedicine, HttpStatus.CREATED);
     }
 
-    // Méthode pour mettre à jour un médicament par son ID
-    @PutMapping("/updateMedById/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Medicine> updateMedById(@PathVariable Long id, @RequestBody Medicine newMedicineData) {
-        Optional<Medicine> oldMedData = medRepo.findById(id);
-        if (oldMedData.isPresent()) {
-            Medicine updatedMedicineData = oldMedData.get();
-            updatedMedicineData.setNom(newMedicineData.getNom());
-            updatedMedicineData.setType(newMedicineData.getType());
-            updatedMedicineData.setPrix(newMedicineData.getPrix());
-            updatedMedicineData.setImageUrl(newMedicineData.getImageUrl());
-
-            Medicine updatedMedicine = medRepo.save(updatedMedicineData);
-            return new ResponseEntity<>(updatedMedicine, HttpStatus.OK); // 200 OK
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+        return medRepo.findById(id).map(existingMed -> {
+            existingMed.setNom(newMedicineData.getNom());
+            existingMed.setType(newMedicineData.getType());
+            existingMed.setPrix(newMedicineData.getPrix());
+            existingMed.setImageUrl(newMedicineData.getImageUrl());
+            Medicine updatedMed = medRepo.save(existingMed);
+            return new ResponseEntity<>(updatedMed, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // Méthode pour supprimer un médicament par son ID
-    @DeleteMapping("/deleteMedById/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteMedById(@PathVariable Long id) {
-        Optional<Medicine> existingMed = medRepo.findById(id);
-        if (existingMed.isPresent()) {
+        return medRepo.findById(id).map(med -> {
             medRepo.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+            return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
